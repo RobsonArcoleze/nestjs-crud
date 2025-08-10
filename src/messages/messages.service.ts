@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class MessagesService {
 
+    
+
     findAll() {
         return 'Estou retornando tudo!'
     }
@@ -13,5 +15,16 @@ export class MessagesService {
 
     create(body){
         return `Body recebido ${body}`
+    }
+
+    update(id: string, body: any): string{
+        return {
+            id,
+            ...body
+        }
+    }
+
+    remove(id: string): void{
+        console.log('Deletado');
     }
 }
