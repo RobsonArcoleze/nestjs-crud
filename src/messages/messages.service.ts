@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MessagesInterface } from 'src/interfaces/messages/messages.interface';
+import { MessagesDto } from './dto/messages.dto';
 
 @Injectable()
 export class MessagesService {
-  private messages: MessagesInterface[] = [];
+  private messages: MessagesDto[] = [];
 
-  findAll(): MessagesInterface[] {
+  findAll(): MessagesDto[] {
     return this.messages;
   }
 
-  findById(id: number): MessagesInterface {
+  findById(id: number): MessagesDto {
     const message = this.messages.find((message) => message.id === id);
     if (!message) {
       throw new NotFoundException(`Message with id ${id} not found`);
@@ -17,23 +17,23 @@ export class MessagesService {
     return message;
   }
 
-  create(body: Omit<MessagesInterface, 'id'>): MessagesInterface {
-    const newMessage: MessagesInterface = {
+  create(body: Omit<MessagesDto, 'id'>): MessagesDto {
+    const newMessage: MessagesDto = {
       id:
         this.messages.length > 0
           ? Math.max(...this.messages.map((message) => message.id)) + 1
           : 1,
       text: body.text,
-      name: body.name,
+      from: body.from,
+      to: body.to,
+      read: false,
+      data: this.adjustTimeZone(new Date()),
     };
     this.messages.push(newMessage);
     return newMessage;
   }
 
-  update(
-    id: number,
-    body: Partial<Omit<MessagesInterface, 'id'>>,
-  ): MessagesInterface {
+  update(id: number, body: Partial<Omit<MessagesDto, 'id'>>): MessagesDto {
     const index = this.messages.findIndex((message) => message.id === id);
     if (index === -1) {
       throw new NotFoundException(`Message with id ${id} not found`);
@@ -51,5 +51,18 @@ export class MessagesService {
     const newMessages = this.messages.filter((message) => message.id !== id);
     this.messages = newMessages;
     console.log('Deletado');
+  }
+
+  formatDate(date: Date) {
+    return new Intl.DateTimeFormat('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+      dateStyle: 'short',
+      timeStyle: 'short',
+    }).format(date);
+  }
+
+  adjustTimeZone(date: Date) {
+    const brasiliaOffSet = -3;
+    return new Date(date.getTime() + brasiliaOffSet * 60 * 60 * 1000);
   }
 }

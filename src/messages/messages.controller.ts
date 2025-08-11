@@ -1,4 +1,3 @@
-import type { MessagesInterface } from 'src/interfaces/messages/messages.interface';
 import { MessagesService } from './messages.service';
 import {
   Body,
@@ -11,6 +10,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { MessagesDto } from './dto/messages.dto';
 
 @Controller('messages')
 export class MessagesController {
@@ -18,25 +18,25 @@ export class MessagesController {
 
   @Get()
   @HttpCode(200)
-  findAll(): MessagesInterface[] {
+  findAll(): MessagesDto[] {
     return this.messagesService.findAll();
   }
 
   @Get('/:id')
-  findById(@Param('id', ParseIntPipe) id: number): MessagesInterface {
+  findById(@Param('id', ParseIntPipe) id: number): MessagesDto {
     return this.messagesService.findById(id);
   }
 
   @Post()
-  create(@Body() body: Omit<MessagesInterface, 'id'>): MessagesInterface {
+  create(@Body() body: Omit<MessagesDto, 'id'>): MessagesDto {
     return this.messagesService.create(body);
   }
 
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: Partial<Omit<MessagesInterface, 'id'>>,
-  ): MessagesInterface {
+    @Body() body: Partial<Omit<MessagesDto, 'id'>>,
+  ): MessagesDto {
     return this.messagesService.update(id, body);
   }
 
