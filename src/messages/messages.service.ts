@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { MessagesDto } from './dto/messages.dto';
+import { UpdateMessageDto } from './dto/update-message.dto copy';
+import { CreateMessageDto } from './dto/create-message.dto';
 
 @Injectable()
 export class MessagesService {
@@ -10,18 +12,18 @@ export class MessagesService {
   }
 
   findById(id: number): MessagesDto {
-    const message = this.messages.find((message) => message.id === id);
+    const message = this.messages.find(message => message.id === id);
     if (!message) {
       throw new NotFoundException(`Message with id ${id} not found`);
     }
     return message;
   }
 
-  create(body: Omit<MessagesDto, 'id'>): MessagesDto {
+  create(body: CreateMessageDto): MessagesDto {
     const newMessage: MessagesDto = {
       id:
         this.messages.length > 0
-          ? Math.max(...this.messages.map((message) => message.id)) + 1
+          ? Math.max(...this.messages.map(message => message.id)) + 1
           : 1,
       text: body.text,
       from: body.from,
@@ -33,8 +35,8 @@ export class MessagesService {
     return newMessage;
   }
 
-  update(id: number, body: Partial<Omit<MessagesDto, 'id'>>): MessagesDto {
-    const index = this.messages.findIndex((message) => message.id === id);
+  update(id: number, body: UpdateMessageDto): MessagesDto {
+    const index = this.messages.findIndex(message => message.id === id);
     if (index === -1) {
       throw new NotFoundException(`Message with id ${id} not found`);
     }
@@ -48,7 +50,7 @@ export class MessagesService {
   }
 
   remove(id: number): void {
-    const newMessages = this.messages.filter((message) => message.id !== id);
+    const newMessages = this.messages.filter(message => message.id !== id);
     this.messages = newMessages;
     console.log('Deletado');
   }
