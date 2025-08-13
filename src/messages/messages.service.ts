@@ -1,58 +1,53 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MessagesDto } from './dto/messages.dto';
-import { UpdateMessageDto } from './dto/update-message.dto copy';
+import { UpdateMessageDto } from './dto/update-message.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MessageEntity } from './entities/message.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class MessagesService {
-  private messages: MessagesDto[] = [];
+  constructor(
+    @InjectRepository(MessageEntity)
+    private messageRepository: Repository<MessageEntity>,
+  ) {}
 
-  findAll(): MessagesDto[] {
-    return this.messages;
+  findAll() {
+    return this.messageRepository.find();
   }
 
-  findById(id: number): MessagesDto {
-    const message = this.messages.find(message => message.id === id);
-    if (!message) {
+  async findById(id: number) {
+    const message = await this.messageRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!message)
       throw new NotFoundException(`Message with id ${id} not found`);
-    }
+
     return message;
   }
 
-  create(body: CreateMessageDto): MessagesDto {
-    const newMessage: MessagesDto = {
-      id:
-        this.messages.length > 0
-          ? Math.max(...this.messages.map(message => message.id)) + 1
-          : 1,
-      text: body.text,
-      from: body.from,
-      to: body.to,
-      read: false,
-      data: this.adjustTimeZone(new Date()),
-    };
-    this.messages.push(newMessage);
-    return newMessage;
+  async create(body: CreateMessageDto) {
+    const messageEntity = this.messageRepository.create(body);
+    return await this.messageRepository.save(messageEntity);
   }
 
-  update(id: number, body: UpdateMessageDto): MessagesDto {
-    const index = this.messages.findIndex(message => message.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Message with id ${id} not found`);
-    }
-
-    this.messages[index] = {
-      ...this.messages[index],
+  async update(id: number, body: UpdateMessageDto) {
+    return await this.messageRepository.preload({
+      id,
       ...body,
-    };
-
-    return this.messages[index];
+    });
   }
 
-  remove(id: number): void {
-    const newMessages = this.messages.filter(message => message.id !== id);
-    this.messages = newMessages;
-    console.log('Deletado');
+  async remove(id: number) {
+    const messageById = await this.messageRepository.findOneBy({
+      id,
+    });
+
+    if (!messageById)
+      throw new NotFoundException(`Message with id ${id} not found`);
+    return this.messageRepository.delete(messageById);
   }
 
   formatDate(date: Date) {

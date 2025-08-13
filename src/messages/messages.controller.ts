@@ -10,9 +10,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { MessagesDto } from './dto/messages.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto copy';
+import { UpdateMessageDto } from './dto/update-message.dto';
 
 @Controller('messages')
 export class MessagesController {
@@ -20,17 +19,17 @@ export class MessagesController {
 
   @Get()
   @HttpCode(200)
-  findAll(): MessagesDto[] {
+  findAll() {
     return this.messagesService.findAll();
   }
 
   @Get('/:id')
-  findById(@Param('id', ParseIntPipe) id: number): MessagesDto {
+  findById(@Param('id', ParseIntPipe) id: number) {
     return this.messagesService.findById(id);
   }
 
   @Post()
-  create(@Body() body: CreateMessageDto): MessagesDto {
+  create(@Body() body: CreateMessageDto) {
     return this.messagesService.create(body);
   }
 
@@ -38,12 +37,12 @@ export class MessagesController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateMessageDto,
-  ): MessagesDto {
+  ) {
     return this.messagesService.update(id, body);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number): void {
-    this.messagesService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.messagesService.remove(id);
   }
 }
