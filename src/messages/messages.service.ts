@@ -34,10 +34,13 @@ export class MessagesService {
   }
 
   async update(id: number, body: UpdateMessageDto) {
-    return await this.messageRepository.preload({
+    const message = await this.messageRepository.preload({
       id,
       ...body,
     });
+    if (!message)
+      throw new NotFoundException(`Message with id ${id} not found`);
+    return await this.messageRepository.save(message);
   }
 
   async remove(id: number) {
