@@ -4,16 +4,39 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MessageEntity } from './entities/message.entity';
 import { Repository } from 'typeorm';
+import { PersonService } from 'src/person/person.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class MessagesService {
   constructor(
     @InjectRepository(MessageEntity)
     private messageRepository: Repository<MessageEntity>,
+    private readonly personService: PersonService,
   ) {}
 
-  findAll() {
-    return this.messageRepository.find();
+  async findAll(pagination?: PaginationDto) {
+    const paginationDto: PaginationDto = plainToInstance(
+      PaginationDto,
+      pagination ?? {},
+    );
+    const findOptions: any = {
+      skip: paginationDto.limit ? paginationDto.skip : 0,
+      take: paginationDto.limit ?? null,
+      order: { id: 'DESC' },
+    };
+
+    const [messages, count] =
+      await this.messageRepository.findAndCount(findOptions);
+
+    return {
+      data: messages,
+      count,
+      limit: paginationDto.limit,
+      skip: paginationDto.skip,
+      page: pagination?.page ?? 1,
+    };
   }
 
   async findById(id: number) {
@@ -29,6 +52,9 @@ export class MessagesService {
   }
 
   async create(body: CreateMessageDto) {
+    await this.personService.findOne(body.from.id);
+    await this.personService.findOne(body.to.id);
+
     const messageEntity = this.messageRepository.create(body);
     return await this.messageRepository.save(messageEntity);
   }

@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { Person } from 'src/person/entities/person.entity';
 
 export class CreateMessageDto {
   @IsString()
@@ -7,15 +8,9 @@ export class CreateMessageDto {
   @MaxLength(255)
   text: string;
 
-  @IsString()
   @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(50)
-  from: string;
+  from: Person;
 
-  @IsString()
   @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(50)
-  to: string;
+  to: Person;
 }

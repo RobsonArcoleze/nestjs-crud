@@ -1,7 +1,10 @@
+import { Person } from 'src/person/entities/person.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -14,11 +17,21 @@ export class MessageEntity {
   @Column({ name: 'text', type: 'varchar', length: 255 })
   text: string;
 
-  @Column({ name: 'from', type: 'varchar', length: 50 })
-  from: string;
+  @ManyToOne(() => Person, person => person.messageSend, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    eager: true,
+  })
+  @JoinColumn({ name: 'from_id_person' })
+  from: Person;
 
-  @Column({ name: 'to', type: 'varchar', length: 50 })
-  to: string;
+  @ManyToOne(() => Person, person => person.messageReceived, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    eager: true,
+  })
+  @JoinColumn({ name: 'to_id_person' })
+  to: Person;
 
   @Column({ name: 'read', default: false })
   read: boolean;
