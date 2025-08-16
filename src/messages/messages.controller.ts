@@ -1,4 +1,3 @@
-import { MessagesService } from './messages.service';
 import {
   Body,
   Controller,
@@ -11,9 +10,10 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { MessagesService } from './messages.service';
 
 @Controller('messages')
 export class MessagesController {
