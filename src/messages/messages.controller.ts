@@ -12,13 +12,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { ExceptionHandlerInterceptor } from 'src/common/interceptor/exception-handler.interceptor';
+import { CacheInteceptor } from 'src/common/interceptor/cache.interceptor';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessagesService } from './messages.service';
 
 @Controller('messages')
-@UseInterceptors(ExceptionHandlerInterceptor)
+@UseInterceptors(CacheInteceptor)
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
