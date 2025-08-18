@@ -1,15 +1,9 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MessagesModule } from 'src/messages/messages.module';
+import { PersonModule } from 'src/person/person.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MessagesModule } from 'src/messages/messages.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { PersonModule } from 'src/person/person.module';
-import { SimpleMiddleware } from 'src/common/middleware/simple-middleware.middleware';
 
 @Module({
   imports: [
@@ -29,11 +23,4 @@ import { SimpleMiddleware } from 'src/common/middleware/simple-middleware.middle
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SimpleMiddleware).forRoutes({
-      path: '*',
-      method: RequestMethod.ALL,
-    });
-  }
-}
+export class AppModule {}
