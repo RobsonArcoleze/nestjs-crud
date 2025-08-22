@@ -14,6 +14,7 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessagesService } from './messages.service';
+import { UrlParam } from 'src/common/params/url-param/url-param.decorator';
 
 @Controller('messages')
 export class MessagesController {
@@ -21,7 +22,9 @@ export class MessagesController {
 
   @Get()
   @HttpCode(200)
-  findAll(@Query() pagination: PaginationDto) {
+  findAll(@Query() pagination: PaginationDto, @UrlParam() url: string) {
+    console.log(url);
+
     return this.messagesService.findAll(pagination);
   }
 
