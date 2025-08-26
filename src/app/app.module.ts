@@ -4,18 +4,29 @@ import { MessagesModule } from 'src/messages/messages.module';
 import { PersonModule } from 'src/person/person.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import appConfig from './app.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'postgres',
-      autoLoadEntities: true, //carrega entidades sem precisar especifica-las
-      synchronize: true, // Sincroniza tudo com o banco de dados ->OBS: Não deve ser usado em produção
+    ConfigModule.forRoot({
+      load: [appConfig],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: configService.getOrThrow<string>('database.type') as 'postgres',
+        host: configService.getOrThrow<string>('database.host'),
+        port: configService.getOrThrow<number>('database.port'),
+        username: configService.getOrThrow<string>('database.username'),
+        password: configService.getOrThrow<string>('database.password'),
+        database: configService.getOrThrow<string>('database.database'),
+        autoLoadEntities: configService.getOrThrow<boolean>(
+          'database.autoLoadEntities',
+        ),
+        synchronize: configService.getOrThrow<boolean>('database.synchronize'),
+      }),
     }),
     MessagesModule,
     PersonModule,
