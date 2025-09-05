@@ -8,14 +8,20 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Person } from './entities/person.entity';
 import { Repository } from 'typeorm';
+import { HashingService } from 'src/Auth/hashing/hashing.service';
 
 @Injectable()
 export class PersonService {
   constructor(
     @InjectRepository(Person) private personReposistory: Repository<Person>,
+    private readonly hashingService: HashingService,
   ) {}
   async create(createPersonDto: CreatePersonDto) {
     try {
+      const passwordHash = await this.hashingService.hash(
+        createPersonDto.password,
+      );
+      createPersonDto.password = passwordHash;
       const person = this.personReposistory.create(createPersonDto);
       return await this.personReposistory.save(person);
     } catch (error: any) {
