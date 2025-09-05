@@ -43,6 +43,10 @@ export class PersonService {
   }
 
   async update(id: number, updatePersonDto: UpdatePersonDto) {
+    if (updatePersonDto?.password) {
+      const passHash = await this.hashingService.hash(updatePersonDto.password);
+      updatePersonDto.password = passHash;
+    }
     const person = await this.personReposistory.preload({
       id,
       ...updatePersonDto,
