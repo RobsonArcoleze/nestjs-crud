@@ -16,6 +16,7 @@ export class PersonService {
     @InjectRepository(Person) private personReposistory: Repository<Person>,
     private readonly hashingService: HashingService,
   ) {}
+
   async create(createPersonDto: CreatePersonDto) {
     try {
       const passwordHash = await this.hashingService.hash(
